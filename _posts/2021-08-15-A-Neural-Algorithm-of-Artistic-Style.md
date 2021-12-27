@@ -1,5 +1,6 @@
 ---
 title: "A Neural Algorithm of Artistic Style"
+excerpt: "우리는 DNN에 기반하여 높은 인식력을 보이는 예술적 이미지를 생성해내는 인공 시스템을 소개한다. 이 시스템은 neural 표현을 사용하면서 임의의 이미지의 내용과 스타일을 분리 및 재조합하며, 예술적 이미지의 생성을 위한 neural algorithm을 만들어낸다. 거기에 더해 인공신경망과 생물학적 시각의 놀라운 유사성에 비추어, 우리의 작업에서는 인간이 어떻게 예술적인 형상을 창조하고 인지하는지에 대해 알고리즘적으로 이해하는 길을 제시하겠다."
 categories:
   - GAN Study
 tags:
@@ -7,9 +8,14 @@ tags:
   - GAN
   - Neural Style Transfer
   - A Neural Algorithm of Artistic Style
+# table of contents
+toc: true # 오른쪽 부분에 목차를 자동 생성해준다.
+toc_label: "table of content" # toc 이름 설정
+toc_icon: "bars" # 아이콘 설정
+toc_sticky: true # 마우스 스크롤과 함께 내려갈 것인지 설정
 ---
 
-[A Neural Algorithm of Artistic Style](https://arxiv.org/abs/1508.06576)
+[Paper](https://arxiv.org/abs/1508.06576)
 
 ## Abstract
 
@@ -21,7 +27,7 @@ tags:
 
 - 이미지 처리 문제에서 가장 뛰어난 성능을 보이는 DNN은 Convolutional Neural Network(합성곱 신경망)이다. CNN은 시각적인 정보를 피드포워드 방식에서 계층적으로 처리하는 작은 컴퓨팅 유닛의 층들을 포함한다. 각각의 유닛으로 이루어진 층은 입력 이미지로부터 특징을 추출(feature extractor)하는 이미지 필터들의 집합으로 이해할 수 있다. 따라서 주어진 층의 출력은 feature map(특성 맵)이라고 불리우는, 입력 이미지의 서로 다르게 필터된 버전들로 구성된다
 
-![Fig 1. Convolutional Neural Network(CNN).](/assets/images/2021-12-27/fig1.jpg)
+![Fig 1. Convolutional Neural Network(CNN).](/assets/images/2021-08-15/fig1.jpg)
 
 Fig 1. Convolutional Neural Network(CNN).
 
@@ -30,14 +36,14 @@ Fig 1. Convolutional Neural Network(CNN).
 - 신경망의 다양한 층에 만들어진 스타일 특성 공간에서 얻어낸 정보를 주어진 입력 이미지의 스타일 표현에 맞는 이미지를 만들어내는 방법으로 시각화할 수 있다. 스타일 특성으로부터의 재생성은 입력 이미지의 색과 국소적 구조의 관점에서의 일반화된 모습을 보여주는 텍스쳐화된 버전을 생산한다. 더욱이 이 국소적 이미지 구조의 크기와 복잡도는 계층을 따라서 증가하는데, 이는 수용 가능한 필드 크기와 특징의 복잡도의 증가로 볼 수 있다. 우리는 이러한 다중 스케일 표현을 'style representation'으로 부르기로 했다.
 - 이 논문에서의 중요한 발견은 CNN에서의 '내용'과 '스타일'의 표현이 분리 가능하다는 것이다. 즉, 우리는 두 표현을 독립적으로 다루어 새로운, 인식적으로 의미있는 이미지를 생성해낼 수 있다. 이 발견을 입증하기 위해, 우리는 두 개의 다른 원 이미지의 내용과 스타일 표현을 섞어 이미지를 만든다. 특히, 우리는 독일 튀빙겐의 "Neckarfront" 사진의 내용 표현에, 예술의 다양한 시대에서 추린 유명한 작품들의 스타일 표현을 맞추어본다(Fig 2).
     
-    ![Fig 2. 잘 알려진 작품들의 스타일을 합친 사진. B The Shipwreck of the Minotaur by J.M.W.Turner, 1805. C The Starry Night by Vincent van Gogh, 1889. D Der Schrei by Edvard Munch, 1893. E Femme nue assise by Pablo Picasso, 1910. F Composition VII by Wassily Kandinsky, 1913.](/assets/images/2021-12-27/fig2.jpg)
+    ![Fig 2. 잘 알려진 작품들의 스타일을 합친 사진. B The Shipwreck of the Minotaur by J.M.W.Turner, 1805. C The Starry Night by Vincent van Gogh, 1889. D Der Schrei by Edvard Munch, 1893. E Femme nue assise by Pablo Picasso, 1910. F Composition VII by Wassily Kandinsky, 1913.](/assets/images/2021-08-15/fig2.jpg)
     
     Fig 2. 잘 알려진 작품들의 스타일을 합친 사진. B The Shipwreck of the Minotaur by J.M.W.Turner, 1805. C The Starry Night by Vincent van Gogh, 1889. D Der Schrei by Edvard Munch, 1893. E Femme nue assise by Pablo Picasso, 1910. F Composition VII by Wassily Kandinsky, 1913.
     
 - 결과 이미지는 사진의 내용 표현과 각각의 예술 작품의 스타일 표현이 동시에 충족하는 이미지를 찾음으로 합성된다(Methods를 볼 것). 원 사진의 전체적인 배열은 보존이 되나, 전체적인 장면을 구성하는 색상과 국소적인 구조는 작품이 만들어낸다. 합성된 이미지가 사진의 내용은 보존하지만 그 모습이 예술 작품을 닮도록, 이 과정은 효과적으로 사진을 작품의 스타일로 렌더링한다.
 - 위에서 약술한 대로, style representation은 신경망의 여러 층을 포함하는 다중 스케일의 표현이다. Fig 2에서 보인 이미지들에서, style representation은 전체 신경망 계층에서의 층들을 포함했다. 스타일은 그저 더 적은 수의 낮은 층들만을 포함함으로 더욱 국소적으로 정의될 수 있으며 이는 또 다른 시각적 경험을 보여준다(Fig 3, 행을 따라 확인). Style representation을 신경망의 높은 층으로 맞추면 국소적 이미지 구조들은 점점 더 커지는 스케일에 맞춰지며, 이는 더 부드럽고 연속적인 시각적 경험으로 이어진다. 따라서 시각적으로 가장 만족스러운 이미지들은 주로 style representation을 신경망의 최상층까지 맞추어 생성된 것들이다.
 
-![Fig 3. Wassily Kandinsky의 Composition VII의 스타일에 따른 자세한 결과물. 행은 포함되는 CNN 층을 늘림에 따른 style representation이며, 열은 내용과 스타일 재생성간의 서로 다른 가중치 비율(alpha/beta)에 따른 표현이다.](/assets/images/2021-12-27/fig3.jpg)
+![Fig 3. Wassily Kandinsky의 Composition VII의 스타일에 따른 자세한 결과물. 행은 포함되는 CNN 층을 늘림에 따른 style representation이며, 열은 내용과 스타일 재생성간의 서로 다른 가중치 비율(alpha/beta)에 따른 표현이다.](/assets/images/2021-08-15/fig3.jpg)
 
 Fig 3. Wassily Kandinsky의 Composition VII의 스타일에 따른 자세한 결과물. 행은 포함되는 CNN 층을 늘림에 따른 style representation이며, 열은 내용과 스타일 재생성간의 서로 다른 가중치 비율(alpha/beta)에 따른 표현이다.
 
