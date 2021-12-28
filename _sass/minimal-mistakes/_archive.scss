@@ -7,13 +7,13 @@
   margin-bottom: 2em;
 
   @include breakpoint($large) {
-    float: right;
-    width: calc(100% - #{$right-sidebar-width-narrow});
+    float: left;
+    width: calc(100% - #{$right-sidebar-width-narrow} - 4em);
     padding-right: $right-sidebar-width-narrow;
   }
 
   @include breakpoint($x-large) {
-    width: calc(100% - #{$right-sidebar-width});
+    width: calc(100% - #{$right-sidebar-width} - 4em);
     padding-right: $right-sidebar-width;
   }
 }
